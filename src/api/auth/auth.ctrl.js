@@ -37,6 +37,17 @@ export const login = async (ctx) => {
 */
 export const logout = async (ctx) => {
     console.log(ctx.state.user.loginType);
+
+    // if (ctx.state.user.loginType === "kakao") {
+    // 카카오 계정 로그아웃 Test
+    // const kakaoLogout = await axios.post("https://kapi.kakao.com/v1/user/logout",{},{
+    //     headers: {
+    //         "Content-Type": "application/x-www-form-urlencoded",
+    //         "Authorization": `Bearer ${}`
+    //     }
+    // })
+    // }
+
     ctx.cookies.set("sns_login_token");
     ctx.status = 200; // No Conent
     ctx.body = {
