@@ -1,5 +1,6 @@
 import axios from "axios";
 import { CLIENT_ID, CLIENT_SECRET, KAKAO_REDIRECT_URL } from "../../key";
+import { generateToken } from "../../lib/jwtMiddleware";
 
 const formUrlEncoded = (x) =>
     Object.keys(x).reduce(
@@ -53,6 +54,9 @@ export const kakao = async (ctx) => {
             },
         });
         if (userInfo.data) {
+            const token = await generateToken(userInfo.data.id, "kakao");
+            ctx.cookies.set("sns_login_token", token, { httpOnly: true });
+
             ctx.status = 200;
             ctx.body = {
                 type: "success",
@@ -81,20 +85,36 @@ export const kakao = async (ctx) => {
         console.log(e);
         console.log("error");
     }
-    // console.log(ctx.originalUrl);
-    // console.log(String(ctx.originalUrl).slice("="));
-    // console.log(code);
 };
 
 export const google = async (ctx) => {
     const { token } = ctx.request.body;
     console.log(token);
 
+    var base64Url = token.split(".")[1];
+    var base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    var jsonPayload = decodeURIComponent(
+        atob(base64)
+            .split("")
+            .map(function (c) {
+                return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+            })
+            .join("")
+    );
+
+    // 여기에 토큰 정보가 담겨있다.
+    const result = JSON.parse(jsonPayload);
+
+    const token_google = await generateToken(result.sub, "google");
+    ctx.cookies.set("sns_login_token", token_google, { httpOnly: true });
+
+    // sub가 고유 아이디다.
+    // 토큰을 발급한다. (data엔 일단 다 담아본다.)
+
     ctx.status = 200;
     ctx.body = {
         type: "success",
-        message: "사용자 구굴 정보 가져오기 성공(decode 진행중)",
-        data: null,
-        // data: userInfo.data,
+        message: "사용자 구글 정보 가져오기 성공",
+        data: result,
     };
 };

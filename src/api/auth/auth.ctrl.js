@@ -37,16 +37,17 @@ export const login = async (ctx) => {
 */
 export const logout = async (ctx) => {
     console.log(ctx.state.user.loginType);
+    ctx.cookies.set("sns_login_token");
+    ctx.status = 200; // No Conent
+    ctx.body = {
+        type: "logout_success",
+        message: "로그아웃했습니다.",
+    };
 
     // 일반 로그인 사용자가 로그아웃을 한다면
-    if (ctx.state.user.loginType === "normal") {
-        // 토큰 만료, 쿠키 삭제
-        ctx.cookies.set("sns_login_token");
-        ctx.status = 200; // No Conent
-        ctx.body = {
-            type: "logout_success",
-            message: "로그아웃했습니다.",
-        };
-    }
+    // if (ctx.state.user.loginType === "normal") {
+    // 토큰 만료, 쿠키 삭제
+
+    // }
     // 토큰을 열어본다.
 };
