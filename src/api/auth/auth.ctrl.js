@@ -1,9 +1,11 @@
+// import { generateToken } from "../../lib/jwtMiddleware";
 import { compareUserInfo } from "../../userInfo";
 
 export const login = async (ctx) => {
     const { ID, PW } = ctx.request.body;
 
-    const result = compareUserInfo(ID, PW);
+    // 아이디 비밀번호 확인
+    const result = compareUserInfo(ID, PW, "normal");
 
     if (result.type === "fail") {
         ctx.status = 200;
@@ -14,6 +16,9 @@ export const login = async (ctx) => {
     } else if (result.type === "success") {
         // 로그인이 성공하면 토큰을 생성한다.
         // 토큰은 쿠키에 저장한다.
+
+        // const token = await generateToken(ID, "normal");
+
         ctx.status = 200;
         ctx.body = {
             type: result.type,
