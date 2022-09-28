@@ -4,6 +4,7 @@ import Koa from "koa";
 import Router from "koa-router";
 import api from "./api";
 import bodyParser from "koa-bodyparser";
+import { jwtMiddleware } from "./lib/jwtMiddleware";
 
 const { PORT } = process.env;
 const app = new Koa();
@@ -13,7 +14,8 @@ router.use("/api", api.routes());
 
 app.use(bodyParser());
 
-// app.use(jwtMiddleware);
+app.use(jwtMiddleware);
+
 app.use(router.routes()).use(router.allowedMethods());
 
 const port = PORT || 4500;

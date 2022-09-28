@@ -1,42 +1,38 @@
 const jwt = require("jsonwebtoken");
 
 /*
-토큰에 들어가야 할 값.
+토큰에 담는 값.
 1. 로그인 타입 (일반, sns)
 2. 아이디
 3. 만료시간
 */
 
-const generateToken = async (UserID) => {
-    // DB
-    // let result = await MSREQ().query(
-    //     `SELECT UserID UserID, UserName FROM Users WHERE UserID = '${UserID}'`
-    // );
+// 사용자 아이디로 사용자 이름을 가져오는 부분을 제거함.
+export const generateToken = async (UserID, type) => {
+    const token = jwt.sign(
+        {
+            UserID: UserID,
+            loginType: type,
+        },
+        process.env.JWT_SECRET,
+        {
+            expiresIn: "1m", // 60분동안 유효함 >> test: 1분
+        }
+    );
 
-    if (result.recordset && Object.keys(result.recordset).length > 0) {
-        const token = jwt.sign(
-            {
-                UserID: result.recordset[0].UserID,
-                UserName: result.recordset[0].UserName,
-            },
-            process.env.JWT_SECRET,
-            {
-                expiresIn: "60m", // 60분동안 유효함
-            }
-        );
-
-        return token;
-    }
-
-    return null;
+    return token;
 };
 
-const jwtMiddleware = async (ctx, next) => {
+export const jwtMiddleware = async (ctx, next) => {
     let token = ctx.cookies.get("access_token");
     if (!token) return next(); // 토큰이 없음
 
     try {
+        // 토큰 확인
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        // 만약 토큰 만료라면?
+
         ctx.state.user = {
             UserID: decoded.UserID,
             UserName: decoded.UserName,
@@ -58,5 +54,3 @@ const jwtMiddleware = async (ctx, next) => {
         return next();
     }
 };
-
-module.exports = jwtMiddleware;

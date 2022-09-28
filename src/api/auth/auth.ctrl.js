@@ -1,4 +1,5 @@
 // import { generateToken } from "../../lib/jwtMiddleware";
+import { generateToken } from "../../lib/jwtMiddleware";
 import { compareUserInfo } from "../../userInfo";
 
 export const login = async (ctx) => {
@@ -17,8 +18,10 @@ export const login = async (ctx) => {
         // 로그인이 성공하면 토큰을 생성한다.
         // 토큰은 쿠키에 저장한다.
 
-        // const token = await generateToken(ID, "normal");
+        const token = await generateToken(ID, "normal");
 
+        // 테스트를 위해 토큰 이름 구분
+        ctx.cookies.set("sns_login_token", token, { httpOnly: true });
         ctx.status = 200;
         ctx.body = {
             type: result.type,
@@ -32,4 +35,6 @@ export const login = async (ctx) => {
 2. 토큰을 열어서 어떤 로그인이 되어있는지 확인한다.
 3. 일반로그인이면 토큰 만료를, sns 로그인이면 해당 서비스 로그아웃 후, 토큰 만료를 진행한다.
 */
-export const logout = async (ctx) => {};
+export const logout = async (ctx) => {
+    // 토큰을 열어본다.
+};
