@@ -1,5 +1,7 @@
 const jwt = require("jsonwebtoken");
 
+const TOKEN_EXPIRED = "jwt expired";
+
 /*
 토큰에 담는 값.
 1. 로그인 타입 (일반, sns)
@@ -9,6 +11,7 @@ const jwt = require("jsonwebtoken");
 
 // 사용자 아이디로 사용자 이름을 가져오는 부분을 제거함.
 export const generateToken = async (UserID, type) => {
+    console.log("type", type);
     const token = jwt.sign(
         {
             UserID: UserID,
@@ -23,34 +26,56 @@ export const generateToken = async (UserID, type) => {
     return token;
 };
 
+const exceptionUrl = ["/api/auth/login"];
+
 export const jwtMiddleware = async (ctx, next) => {
-    let token = ctx.cookies.get("access_token");
-    if (!token) return next(); // 토큰이 없음
+    let token = ctx.cookies.get("sns_login_token");
+    // 토큰이 없음
+    if (!token) {
+        if (exceptionUrl.includes(ctx.request.url)) {
+            return next();
+        } else {
+            ctx.status = 401;
+            ctx.body = {
+                type: "token expired",
+                message: "로그인이 만료되었습니다.",
+            };
+        }
+    }
 
     try {
         // 토큰 확인
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-        // 만약 토큰 만료라면?
+        // 만약 토큰 만료라면 catch로
 
         ctx.state.user = {
             UserID: decoded.UserID,
-            UserName: decoded.UserName,
+            loginType: decoded.loginType,
         };
-        // 토큰 15분 미만 남으면 재발급
-        const now = Math.floor(Date.now() / 1000);
+        // 토큰 15분 미만 남으면 재발급 --> 일단 제거. 만료되면 끝.
+        // const now = Math.floor(Date.now() / 1000);
 
-        if (decoded.exp - now < 60 * 60 * 0.5) {
-            token = await generateToken(decoded.UserID);
-            ctx.cookies.set("access_token", token, {
-                maxAge: 1000 * 60 * 60 * 1, // 1시간
-                httpOnly: true,
-            });
-        }
+        // if (decoded.exp - now < 60 * 60 * 0.5) {
+        //     token = await generateToken(decoded.UserID);
+        //     ctx.cookies.set("sns_login_token", token, {
+        //         maxAge: 1000 * 60 * 60 * 1, // 1시간
+        //         httpOnly: true,
+        //     });
+        // }
 
         return next();
     } catch (e) {
-        // 토큰 검증 실패
-        return next();
+        const { message } = e;
+
+        // 토큰 만료
+        // access_token, refresh_token 이 없기 때문에 바로 만료 처리. (다시 로그인 유도)
+        if (message === TOKEN_EXPIRED) {
+            console.log("토큰이 만료되었습니다.");
+            ctx.status = 401;
+            ctx.body = {
+                type: "token expired",
+                message: "로그인이 만료되었습니다.",
+            };
+        }
     }
 };
