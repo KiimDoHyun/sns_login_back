@@ -1,26 +1,30 @@
-const userID = "aa";
-const userPW = "1234";
+import { compareUserInfo } from "../../userInfo";
 
 export const login = async (ctx) => {
     const { ID, PW } = ctx.request.body;
 
-    if (!ID || !PW) {
+    const result = compareUserInfo(ID, PW);
+
+    if (result.type === "fail") {
         ctx.status = 200;
         ctx.body = {
-            type: "fail",
-            message: "입력값이 부족합니다.",
+            type: result.type,
+            message: result.message,
         };
-    } else if (ID !== userID || PW !== userPW) {
+    } else if (result.type === "success") {
+        // 로그인이 성공하면 토큰을 생성한다.
+        // 토큰은 쿠키에 저장한다.
         ctx.status = 200;
         ctx.body = {
-            type: "fail",
-            message: "아이디/비밀번호 가 틀렸습니다.",
-        };
-    } else if (ID === userID && PW === userPW) {
-        ctx.status = 200;
-        ctx.body = {
-            type: "success",
-            message: "로그인 성공",
+            type: result.type,
+            message: result.message,
         };
     }
 };
+
+/*
+1. 넘어온 토큰을 받는다.
+2. 토큰을 열어서 어떤 로그인이 되어있는지 확인한다.
+3. 일반로그인이면 토큰 만료를, sns 로그인이면 해당 서비스 로그아웃 후, 토큰 만료를 진행한다.
+*/
+export const logout = async (ctx) => {};
