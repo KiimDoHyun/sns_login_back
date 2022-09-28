@@ -85,3 +85,16 @@ export const kakao = async (ctx) => {
     // console.log(String(ctx.originalUrl).slice("="));
     // console.log(code);
 };
+
+export const google = async (ctx) => {
+    const { token } = ctx.request.body;
+    console.log(token);
+
+    ctx.status = 200;
+    ctx.body = {
+        type: "success",
+        message: "사용자 구굴 정보 가져오기 성공(decode 진행중)",
+        data: null,
+        // data: userInfo.data,
+    };
+};
