@@ -1,5 +1,5 @@
 import axios from "axios";
-import { CLIENT_ID, KAKAO_REDIRECT_URL } from "../../key";
+import { CLIENT_ID, CLIENT_SECRET, KAKAO_REDIRECT_URL } from "../../key";
 
 const formUrlEncoded = (x) =>
     Object.keys(x).reduce(
@@ -23,7 +23,7 @@ export const kakao = async (ctx) => {
                 client_id: CLIENT_ID,
                 redirect_uri: KAKAO_REDIRECT_URL,
                 code: code,
-                client_secret: "weTcDGP1eAIxsdbfqZjRyYZesrVJPr6m",
+                client_secret: CLIENT_SECRET,
             }),
             {
                 headers: {
