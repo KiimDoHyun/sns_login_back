@@ -1,9 +1,5 @@
 import axios from "axios";
-
-const KAKAO_OAUTH_TOKEN_API_URL = "https://kauth.kakao.com/oauth/token";
-const KAKAO_REDIRECT_URL = "http://localhost:6001/kakaologin";
-const CLIENT_ID = "0075eac3568ac49c76482a46929e9cf2";
-const CLIENT_SECRET = "BRvensYX5K8hKNb07lKfUv7fErvXav5G";
+import { CLIENT_ID, KAKAO_REDIRECT_URL } from "../../key";
 
 const formUrlEncoded = (x) =>
     Object.keys(x).reduce(
