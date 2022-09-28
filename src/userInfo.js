@@ -15,6 +15,10 @@ const userInfoArr = [
         userID: 2447397556,
         type: "kakao",
     },
+    {
+        userID: 117965442533571519980,
+        type: "google",
+    },
 ];
 
 // 내 카카오 로그인시 받는 id: 2447397556
