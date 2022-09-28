@@ -26,12 +26,18 @@ export const generateToken = async (UserID, type) => {
     return token;
 };
 
-const exceptionUrl = ["/api/auth/login"];
+const exceptionUrl = [
+    "/api/auth/login",
+    "/api/social/kakao",
+    "/api/social/google",
+    "api/auth/logout",
+];
 
 export const jwtMiddleware = async (ctx, next) => {
     let token = ctx.cookies.get("sns_login_token");
     // 토큰이 없음
     if (!token) {
+        console.log("뭐지");
         if (exceptionUrl.includes(ctx.request.url)) {
             return next();
         } else {
