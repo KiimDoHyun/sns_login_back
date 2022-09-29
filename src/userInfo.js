@@ -12,18 +12,19 @@ const userInfoArr = [
         loginType: "normal",
     },
     {
-        userID: 2447397556,
+        userID: "2447397556",
         useName: "김도현",
         loginType: "kakao",
     },
     {
-        userID: 117965442533571519980,
+        userID: "117965442533571519980",
         useName: "구태훈",
         loginType: "google",
     },
 ];
 
 export const compareUserInfo = (id, pw, type) => {
+    console.log(">> id", id);
     let resultObj = null;
     if (type === "normal") {
         const target = userInfoArr.find(
