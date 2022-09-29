@@ -130,20 +130,61 @@ export const google = async (ctx) => {
 };
 
 export const naver = async (ctx) => {
+    // 토큰받아서
+    // 정보 확인하고 진행.
+    const { access_token } = ctx.request.body;
+    console.log("access_token", access_token);
+
+    try {
+        const { data } = await axios.get(
+            "https://openapi.naver.com/v1/nid/me",
+            {
+                headers: {
+                    Authorization: `Bearer ${access_token}`,
+                },
+            }
+        );
+
+        console.log("data", data);
+        console.log("성공");
+
+        const result = compareUserInfo(data.response.id, "", "naver");
+
+        // 토큰 만들어서
+        const token = await generateToken(data.response.id, "naver");
+        ctx.cookies.set("sns_login_token", token, { httpOnly: true });
+        // 리턴.
+        ctx.status = 200;
+        ctx.body = {
+            type: result.type,
+            message: result.message,
+            data: result.data,
+            socialData: data.response,
+        };
+    } catch (e) {
+        console.log(e);
+        console.log("실패");
+        ctx.status = 200;
+        ctx.body = {
+            type: result.type,
+            message: "사용자 네이버 정보 가져오기 실패",
+        };
+    }
+
     // 정보 받아서
-    const { user } = ctx.request.body;
-    console.log("네이버 정보", user);
+    // const { user } = ctx.request.body;
+    // console.log("네이버 정보", user);
     // 회원가입 되어있는 정보가 있는지 확인하고
-    const result = compareUserInfo(user.id, "", "naver");
-    // 토큰 만들어서
-    const token = await generateToken(user.id, "naver");
-    ctx.cookies.set("sns_login_token", token, { httpOnly: true });
-    // 리턴.
-    ctx.status = 200;
-    ctx.body = {
-        type: result.type,
-        message: result.message,
-        data: result.data,
-        socialData: user,
-    };
+    // const result = compareUserInfo(user.id, "", "naver");
+    // // 토큰 만들어서
+    // const token = await generateToken(user.id, "naver");
+    // ctx.cookies.set("sns_login_token", token, { httpOnly: true });
+    // // 리턴.
+    // ctx.status = 200;
+    // ctx.body = {
+    //     type: result.type,
+    //     message: result.message,
+    //     data: result.data,
+    //     socialData: user,
+    // };
 };
