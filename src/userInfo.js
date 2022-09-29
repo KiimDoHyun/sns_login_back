@@ -3,28 +3,30 @@ const userInfoArr = [
         userID: "aa",
         userPW: "1234",
         userName: "김도현",
-        type: "normal",
+        loginType: "normal",
     },
     {
         userID: "bb",
         userPW: "1234",
         userName: "구태훈",
-        type: "normal",
+        loginType: "normal",
     },
     {
         userID: 2447397556,
-        type: "kakao",
+        useName: "김도현",
+        loginType: "kakao",
     },
     {
         userID: 117965442533571519980,
-        type: "google",
+        useName: "구태훈",
+        loginType: "google",
     },
 ];
 
 // 내 카카오 로그인시 받는 id: 2447397556
 
 export const compareUserInfo = (id, pw, type) => {
-    let resultObj = {};
+    let resultObj = null;
     if (type === "normal") {
         const target = userInfoArr.find(
             (userInfo) => userInfo.userID === id && userInfo.userPW === pw
@@ -32,35 +34,34 @@ export const compareUserInfo = (id, pw, type) => {
 
         if (target === undefined) {
             resultObj = {
-                status: 200,
                 type: "fail",
-                message: "아이디/비밀번호가 틀렸습니다.",
+                message: "일치하는 사용자 정보가 없습니다.",
+                data: { loginType: "normal" },
             };
         } else {
             resultObj = {
-                status: 200,
                 type: "success",
                 message: "로그인 성공",
-                userID: id,
+                data: target,
             };
         }
-    } else if (type === "kakao") {
+    } else if (type === "kakao" || type === "google") {
         const target = userInfoArr.find(
-            (userInfo) => userInfo.userID === id && userInfo.type === "kakao"
+            (userInfo) =>
+                userInfo.userID === id && userInfo.loginType === "kakao"
         );
 
         if (target === undefined) {
             resultObj = {
-                status: 200,
                 type: "fail",
-                message: "카카오 로그인에 실패했습니다.",
+                message: "등록되지 않은 사용자",
+                data: { loginType: type },
             };
         } else {
             resultObj = {
-                status: 200,
                 type: "success",
-                message: "로그인 성공",
-                userID: id,
+                message: "등록된 사용자",
+                data: target,
             };
         }
     }

@@ -1,6 +1,7 @@
 import axios from "axios";
 import { CLIENT_ID, CLIENT_SECRET, KAKAO_REDIRECT_URL } from "../../key";
 import { generateToken } from "../../lib/jwtMiddleware";
+import { compareUserInfo } from "../../userInfo";
 
 const formUrlEncoded = (x) =>
     Object.keys(x).reduce(
@@ -34,7 +35,6 @@ export const kakao = async (ctx) => {
         );
 
         const { access_token } = response.data; // 인가코드로 얻은 사용자 정보에 접근할수 있는 토큰.
-        console.log("access_token", access_token);
 
         // 사용자의 동의내역 확인하기
         const userScope = await axios.get(
@@ -45,7 +45,6 @@ export const kakao = async (ctx) => {
                 },
             }
         );
-        console.log("userScope", userScope.data);
 
         // 사용자 정보 가져오기.
         const userInfo = await axios.get("https://kapi.kakao.com/v2/user/me", {
@@ -54,14 +53,20 @@ export const kakao = async (ctx) => {
             },
         });
         if (userInfo.data) {
+            // 회원가입이 되어있는 사용자인지 체크
+            const findResult = compareUserInfo(userInfo.data.id, "", "kakao");
+            console.log("findResult", findResult);
+
+            // 토큰 생성
             const token = await generateToken(userInfo.data.id, "kakao");
             ctx.cookies.set("sns_login_token", token, { httpOnly: true });
 
             ctx.status = 200;
             ctx.body = {
-                type: "success",
-                message: "사용자 카카오 정보 가져오기 성공",
-                data: userInfo.data,
+                type: findResult.type,
+                message: findResult.message,
+                data: findResult.data,
+                socialData: userInfo.data,
             };
         } else {
             ctx.status = 400;
@@ -70,9 +75,9 @@ export const kakao = async (ctx) => {
                 message: "사용자 카카오 정보 가져오기 실패",
             };
         }
-        console.log("userInfo", userInfo.data);
+        // console.log("userInfo", userInfo.data);
 
-        console.log("success");
+        // console.log("success");
         /*
         token_type: bearer (고정)
         access_token: 사용자 액세스 토큰 값
@@ -105,6 +110,9 @@ export const google = async (ctx) => {
     // 여기에 토큰 정보가 담겨있다.
     const result = JSON.parse(jsonPayload);
 
+    // 회원가입이 되어있는 사용자인지 체크
+    const findResult = compareUserInfo(result.sub, "", "google");
+
     const token_google = await generateToken(result.sub, "google");
     ctx.cookies.set("sns_login_token", token_google, { httpOnly: true });
 
@@ -113,8 +121,9 @@ export const google = async (ctx) => {
 
     ctx.status = 200;
     ctx.body = {
-        type: "success",
-        message: "사용자 구글 정보 가져오기 성공",
-        data: result,
+        type: findResult.type,
+        message: findResult.message,
+        data: findResult.data,
+        socialData: result,
     };
 };
