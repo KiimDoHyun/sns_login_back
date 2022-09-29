@@ -1,7 +1,7 @@
 import axios from "axios";
 import { CLIENT_ID, CLIENT_SECRET, KAKAO_REDIRECT_URL } from "../../key";
 import { generateToken } from "../../lib/jwtMiddleware";
-import { compareUserInfo } from "../../userInfo";
+import { compareUserInfo, kakaoInfo } from "../../userInfo";
 
 const formUrlEncoded = (x) =>
     Object.keys(x).reduce(
@@ -46,6 +46,8 @@ export const kakao = async (ctx) => {
             }
         );
 
+        const [global_token, setToken] = kakaoInfo();
+        setToken(access_token);
         // 사용자 정보 가져오기.
         const userInfo = await axios.get("https://kapi.kakao.com/v2/user/me", {
             headers: {
@@ -126,4 +128,8 @@ export const google = async (ctx) => {
         data: findResult.data,
         socialData: result,
     };
+};
+
+export const naver = async (ctx) => {
+    console.log(ctx.request.body);
 };

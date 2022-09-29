@@ -68,3 +68,14 @@ export const compareUserInfo = (id, pw, type) => {
 
     return resultObj;
 };
+
+let kakao_access_token = "";
+export const kakaoInfo = () => {
+    const setToken = (token) => {
+        console.log("들어왔다,", token);
+        kakao_access_token = token;
+    };
+    let inner_access_token = kakao_access_token;
+
+    return [inner_access_token, setToken];
+};

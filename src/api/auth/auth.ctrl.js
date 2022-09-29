@@ -1,6 +1,7 @@
 // import { generateToken } from "../../lib/jwtMiddleware";
+import axios from "axios";
 import { generateToken } from "../../lib/jwtMiddleware";
-import { compareUserInfo } from "../../userInfo";
+import { compareUserInfo, kakaoInfo } from "../../userInfo";
 
 export const login = async (ctx) => {
     const { ID, PW } = ctx.request.body;
@@ -34,15 +35,29 @@ export const login = async (ctx) => {
 export const logout = async (ctx) => {
     // console.log(ctx.state.user.loginType);
 
-    // if (ctx.state.user.loginType === "kakao") {
-    // 카카오 계정 로그아웃 Test
-    // const kakaoLogout = await axios.post("https://kapi.kakao.com/v1/user/logout",{},{
-    //     headers: {
-    //         "Content-Type": "application/x-www-form-urlencoded",
-    //         "Authorization": `Bearer ${}`
-    //     }
-    // })
-    // }
+    if (ctx.state.user.loginType === "kakao") {
+        const [global_token, setToken] = kakaoInfo();
+        console.log("카카오 토큰입니다.", global_token);
+        // 카카오 계정 로그아웃 Test
+        // access_token에 어떻게 접근?
+        try {
+            const kakaoLogout = await axios.post(
+                "https://kapi.kakao.com/v1/user/logout",
+                {},
+                {
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        Authorization: `Bearer ${global_token}`,
+                    },
+                }
+            );
+            console.log(kakaoLogout);
+            console.log("카카오 로그아웃 성공");
+        } catch (e) {
+            console.log(e);
+            console.log("카카오 로그아웃 실패");
+        }
+    }
 
     ctx.cookies.set("sns_login_token");
     ctx.status = 200; // No Conent
