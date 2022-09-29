@@ -45,10 +45,9 @@ export const compareUserInfo = (id, pw, type) => {
                 data: target,
             };
         }
-    } else if (type === "kakao" || type === "google") {
+    } else if (type === "kakao" || type === "google" || type === "naver") {
         const target = userInfoArr.find(
-            (userInfo) =>
-                userInfo.userID === id && userInfo.loginType === "kakao"
+            (userInfo) => userInfo.userID === id && userInfo.loginType === type
         );
 
         if (target === undefined) {

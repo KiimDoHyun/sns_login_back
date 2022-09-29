@@ -131,11 +131,12 @@ export const google = async (ctx) => {
 
 export const naver = async (ctx) => {
     // 정보 받아서
-    console.log("네이버 정보", ctx.request.body);
+    const { user } = ctx.request.body;
+    console.log("네이버 정보", user);
     // 회원가입 되어있는 정보가 있는지 확인하고
-    const result = compareUserInfo(ID, "", "naver");
+    const result = compareUserInfo(user.id, "", "naver");
     // 토큰 만들어서
-    const token = await generateToken(ID, "naver");
+    const token = await generateToken(user.id, "naver");
     ctx.cookies.set("sns_login_token", token, { httpOnly: true });
     // 리턴.
     ctx.status = 200;
@@ -143,6 +144,6 @@ export const naver = async (ctx) => {
         type: result.type,
         message: result.message,
         data: result,
-        socialData: null,
+        socialData: user,
     };
 };
