@@ -143,7 +143,7 @@ export const naver = async (ctx) => {
     ctx.body = {
         type: result.type,
         message: result.message,
-        data: result,
+        data: result.data,
         socialData: user,
     };
 };

@@ -23,8 +23,6 @@ const userInfoArr = [
     },
 ];
 
-// 내 카카오 로그인시 받는 id: 2447397556
-
 export const compareUserInfo = (id, pw, type) => {
     let resultObj = null;
     if (type === "normal") {
