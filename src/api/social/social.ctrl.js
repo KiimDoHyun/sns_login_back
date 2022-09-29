@@ -57,7 +57,6 @@ export const kakao = async (ctx) => {
         if (userInfo.data) {
             // 회원가입이 되어있는 사용자인지 체크
             const findResult = compareUserInfo(userInfo.data.id, "", "kakao");
-            console.log("findResult", findResult);
 
             // 토큰 생성
             const token = await generateToken(userInfo.data.id, "kakao");
@@ -77,9 +76,6 @@ export const kakao = async (ctx) => {
                 message: "사용자 카카오 정보 가져오기 실패",
             };
         }
-        // console.log("userInfo", userInfo.data);
-
-        // console.log("success");
         /*
         token_type: bearer (고정)
         access_token: 사용자 액세스 토큰 값
@@ -89,14 +85,17 @@ export const kakao = async (ctx) => {
         
         */
     } catch (e) {
-        console.log(e);
-        console.log("error");
+        console.log("error", e);
+        ctx.status = 400;
+        ctx.body = {
+            type: "fail",
+            message: "사용자 카카오 정보 가져오기 실패",
+        };
     }
 };
 
 export const google = async (ctx) => {
     const { token } = ctx.request.body;
-    console.log(token);
 
     var base64Url = token.split(".")[1];
     var base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
@@ -132,7 +131,7 @@ export const google = async (ctx) => {
 
 export const naver = async (ctx) => {
     // 정보 받아서
-    console.log(ctx.request.body);
+    console.log("네이버 정보", ctx.request.body);
     // 회원가입 되어있는 정보가 있는지 확인하고
     const result = compareUserInfo(ID, "", "naver");
     // 토큰 만들어서

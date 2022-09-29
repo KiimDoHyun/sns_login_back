@@ -11,7 +11,6 @@ const TOKEN_EXPIRED = "jwt expired";
 
 // 사용자 아이디로 사용자 이름을 가져오는 부분을 제거함.
 export const generateToken = async (UserID, type) => {
-    console.log("type", type);
     const token = jwt.sign(
         {
             UserID: UserID,
@@ -30,15 +29,14 @@ const exceptionUrl = [
     "/api/auth/login",
     "/api/social/kakao",
     "/api/social/google",
+    "/api/social/naver",
     "api/auth/logout",
 ];
 
 export const jwtMiddleware = async (ctx, next) => {
     let token = ctx.cookies.get("sns_login_token");
-    console.log("뭐지", ctx.request.url);
     // 토큰이 없음
     if (!token) {
-        console.log("뭐지", ctx.request.url);
         if (exceptionUrl.includes(ctx.request.url)) {
             return next();
         } else {
@@ -78,7 +76,6 @@ export const jwtMiddleware = async (ctx, next) => {
         // 토큰 만료
         // access_token, refresh_token 이 없기 때문에 바로 만료 처리. (다시 로그인 유도)
         if (message === TOKEN_EXPIRED) {
-            console.log("토큰이 만료되었습니다.");
             ctx.cookies.set("sns_login_token");
             ctx.status = 401;
             ctx.body = {
