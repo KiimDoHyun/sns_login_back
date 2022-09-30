@@ -39,7 +39,6 @@ export const logout = async (ctx) => {
         const [global_token, setToken] = kakaoInfo();
         console.log("카카오 토큰입니다.", global_token);
         // 카카오 계정 로그아웃 Test
-        // access_token에 어떻게 접근?
         try {
             const kakaoLogout = await axios.post(
                 "https://kapi.kakao.com/v1/user/logout",
@@ -65,11 +64,4 @@ export const logout = async (ctx) => {
         type: "logout_success",
         message: "로그아웃했습니다.",
     };
-
-    // 일반 로그인 사용자가 로그아웃을 한다면
-    // if (ctx.state.user.loginType === "normal") {
-    // 토큰 만료, 쿠키 삭제
-
-    // }
-    // 토큰을 열어본다.
 };
